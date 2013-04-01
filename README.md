@@ -1,4 +1,4 @@
 Fitbit
 ======
 
-Fitbit development for uploaded Polar data
+Fitbit development for uploading Polar data
