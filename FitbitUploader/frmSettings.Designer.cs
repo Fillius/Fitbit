@@ -1,6 +1,6 @@
 ﻿namespace FitbitUploader
 {
-    partial class frmSettings
+    partial class FrmSettings
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmSettings));
             this.btnCreateAuthorization = new System.Windows.Forms.Button();
             this.btnPolarXMLHistory = new System.Windows.Forms.Button();
             this.btnPolarXMLHistorySchema = new System.Windows.Forms.Button();

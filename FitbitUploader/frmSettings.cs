@@ -8,17 +8,17 @@ using System.Windows.Forms;
 
 namespace FitbitUploader
 {
-    public partial class frmSettings : Form
+    public partial class FrmSettings : Form
     {
-        private MainForm mainForm;
+        private FrmMainForm mainForm;
 
-        public frmSettings(MainForm frmMain)
+        public FrmSettings(FrmMainForm frmMain)
         {
             InitializeComponent();
 
             mainForm = frmMain;
 
-            if (AppSettings.Default.AccessToken.Length > 0)
+            if (AppSettings.Default.AuthToken.Length > 0)
                 btnCreateAuthorization.Text = "Re-Authorize";
         }
 
@@ -30,11 +30,11 @@ namespace FitbitUploader
             AppSettings.Default.Save();
             authLink = mainForm._oauth.AuthorizationLinkGet();
 
-            var authorizeForm = new Authorize();
+            var authorizeForm = new FrmBrowser();
             authorizeForm.Show();
-            authorizeForm.Navigate(authLink, mainForm);
+            authorizeForm.navigate(authLink, mainForm);
 
-            if (AppSettings.Default.AccessToken.Length > 0)
+            if (AppSettings.Default.AuthToken.Length > 0)
                 btnCreateAuthorization.Text = "Re-Authorize";
         }
 

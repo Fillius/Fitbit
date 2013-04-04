@@ -26,47 +26,24 @@ namespace FitbitUploader {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string AccessToken {
+        public string AuthToken {
             get {
-                return ((string)(this["AccessToken"]));
+                return ((string)(this["AuthToken"]));
             }
             set {
-                this["AccessToken"] = value;
+                this["AuthToken"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string TokenSecret {
+        public string AuthTokenSecret {
             get {
-                return ((string)(this["TokenSecret"]));
+                return ((string)(this["AuthTokenSecret"]));
             }
             set {
-                this["TokenSecret"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Verification {
-            get {
-                return ((string)(this["Verification"]));
-            }
-            set {
-                this["Verification"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.DateTime LastUpload {
-            get {
-                return ((global::System.DateTime)(this["LastUpload"]));
-            }
-            set {
-                this["LastUpload"] = value;
+                this["AuthTokenSecret"] = value;
             }
         }
         
@@ -91,6 +68,18 @@ namespace FitbitUploader {
             }
             set {
                 this["PolarXMLHistorySchemaFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UserId {
+            get {
+                return ((string)(this["UserId"]));
+            }
+            set {
+                this["UserId"] = value;
             }
         }
     }

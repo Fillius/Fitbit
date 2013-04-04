@@ -77,8 +77,23 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PolarPersonalTrainerLib">
-      <HintPath>..\..\..\PolarPersonalTrainer\PolarPersonalTrainerLib\PolarPersonalTrainerLib\obj\Release\PolarPersonalTrainerLib.dll</HintPath>
+    <Reference Include="Fitbit">
+      <HintPath>..\..\Fitbit.NET\Fitbit\bin\Release\Fitbit.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\..\PolarPersonalTrainerLib\PolarPersonalTrainerLib\bin\Release\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\Fitbit.NET\Fitbit\bin\Release\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PolarPersonalTrainerLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PolarPersonalTrainerLib\PolarPersonalTrainerLib\bin\Release\PolarPersonalTrainerLib.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\..\Fitbit.NET\Fitbit\bin\Release\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -91,22 +106,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="frmSettings.cs">
+    <Compile Include="FrmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmSettings.Designer.cs">
-      <DependentUpon>frmSettings.cs</DependentUpon>
+    <Compile Include="FrmSettings.Designer.cs">
+      <DependentUpon>FrmSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Generic Parser\FieldType.cs" />
     <Compile Include="Generic Parser\GenericParser.cs" />
     <Compile Include="Generic Parser\GenericParserAdapter.cs" />
     <Compile Include="Generic Parser\ParserState.cs" />
     <Compile Include="Generic Parser\ParsingException.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="FrmMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="FrmMainForm.Designer.cs">
+      <DependentUpon>FrmMainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="oAuthExt\oAuthBase2.cs" />
     <Compile Include="oAuthExt\oAuthFitbit.cs" />
@@ -117,19 +132,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>AppSettings.settings</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="frmSettings.resx">
-      <DependentUpon>frmSettings.cs</DependentUpon>
+    <EmbeddedResource Include="FrmSettings.resx">
+      <DependentUpon>FrmSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="FrmMainForm.resx">
+      <DependentUpon>FrmMainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Authorize.resx">
-      <DependentUpon>Authorize.cs</DependentUpon>
+    <EmbeddedResource Include="FrmBrowser.resx">
+      <DependentUpon>FrmBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -150,11 +165,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Authorize.cs">
+    <Compile Include="FrmBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Authorize.Designer.cs">
-      <DependentUpon>Authorize.cs</DependentUpon>
+    <Compile Include="FrmBrowser.Designer.cs">
+      <DependentUpon>FrmBrowser.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="AppSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
