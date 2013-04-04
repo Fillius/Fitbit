@@ -82,5 +82,29 @@ namespace FitbitUploader {
                 this["UserId"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PPTUser {
+            get {
+                return ((string)(this["PPTUser"]));
+            }
+            set {
+                this["PPTUser"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PPTPassword {
+            get {
+                return ((string)(this["PPTPassword"]));
+            }
+            set {
+                this["PPTPassword"] = value;
+            }
+        }
     }
 }

@@ -78,22 +78,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Fitbit">
-      <HintPath>..\..\Fitbit.NET\Fitbit\bin\Release\Fitbit.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>.\Fitbit.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack">
-      <HintPath>..\..\PolarPersonalTrainerLib\PolarPersonalTrainerLib\bin\Release\HtmlAgilityPack.dll</HintPath>
+      <HintPath>.\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\Fitbit.NET\Fitbit\bin\Release\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="PolarPersonalTrainerLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\PolarPersonalTrainerLib\PolarPersonalTrainerLib\bin\Release\PolarPersonalTrainerLib.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <Reference Include="PolarPersonalTrainerLib">
+      <HintPath>.\PolarPersonalTrainerLib.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp">
-      <HintPath>..\..\Fitbit.NET\Fitbit\bin\Release\RestSharp.dll</HintPath>
+      <HintPath>..\packages\RestSharp.104.1\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -106,6 +103,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Encryption\SimpleAES.cs" />
     <Compile Include="FrmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -155,6 +153,7 @@
     <None Include="bin\Debug\InWFExample.exe.config" />
     <None Include="bin\Debug\InWFExample.vshost.exe.config" />
     <None Include="FitbitUploader_TemporaryKey.pfx" />
+    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

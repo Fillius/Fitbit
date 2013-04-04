@@ -22,22 +22,6 @@ namespace FitbitUploader
                 btnCreateAuthorization.Text = "Re-Authorize";
         }
 
-        private void btnCreateAuthorization_Click(object sender, EventArgs e)
-        {
-            string authLink;
-
-            AppSettings.Default.Reset();
-            AppSettings.Default.Save();
-            authLink = mainForm._oauth.AuthorizationLinkGet();
-
-            var authorizeForm = new FrmBrowser();
-            authorizeForm.Show();
-            authorizeForm.navigate(authLink, mainForm);
-
-            if (AppSettings.Default.AuthToken.Length > 0)
-                btnCreateAuthorization.Text = "Re-Authorize";
-        }
-
         private void btnPolarXMLHistory_Click(object sender, EventArgs e)
         {
             var filePicker = new OpenFileDialog();
@@ -64,6 +48,16 @@ namespace FitbitUploader
                 mainForm._uploadedSchema = filePicker.FileName;
                 AppSettings.Default.Save();
             }
+        }
+
+        private void btnCreateAuthorization_Click(object sender, EventArgs e)
+        {
+            AppSettings.Default.AuthToken = "";
+            AppSettings.Default.AuthTokenSecret = "";
+            AppSettings.Default.UserId = "";
+            AppSettings.Default.Save();
+
+            MessageBox.Show("Title", "Please restart the program to re-authorize it to Fitbit");
         }
     }
 }

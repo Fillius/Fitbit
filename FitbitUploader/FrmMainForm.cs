@@ -14,6 +14,7 @@ using System.Net;
 using PolarPersonalTrainerLib;
 using Fitbit.Api;
 using Fitbit.Models;
+using FitbitUploader.Encryption;
 
 namespace FitbitUploader
 {
@@ -82,8 +83,8 @@ namespace FitbitUploader
             AuthCredential credentials = null;
 
             // Check if we have already received our authorized credentials
-            if (AppSettings.Default.AuthToken.Length == 0 ||
-                 AppSettings.Default.AuthTokenSecret.Length == 0)
+            if ( AppSettings.Default.AuthToken.Length == 0 ||
+                 AppSettings.Default.AuthTokenSecret.Length == 0 )
             {
                 // Get the Auth credentials for the first time by directoring the
                 // user to the fitbit site to get a PIN.
@@ -107,17 +108,24 @@ namespace FitbitUploader
 
                 credentials = a.GetAuthCredentialFromPin(pin);
 
-                AppSettings.Default.AuthToken = credentials.AuthToken;
-                AppSettings.Default.AuthTokenSecret = credentials.AuthTokenSecret;
+                if (credentials == null)
+                    throw new InvalidDataException("Could not get authorization credentials using the authorisation pin provided");
+
+                SimpleAES simpleAES = new SimpleAES();
+
+                AppSettings.Default.AuthToken = simpleAES.EncryptToString(credentials.AuthToken);
+                AppSettings.Default.AuthTokenSecret = simpleAES.EncryptToString(credentials.AuthTokenSecret);
                 AppSettings.Default.UserId = credentials.UserId;
 
                 AppSettings.Default.Save();
             }
             else
             {
+                SimpleAES simpleAES = new SimpleAES();
+
                 credentials = new AuthCredential();
-                credentials.AuthToken = AppSettings.Default.AuthToken;
-                credentials.AuthTokenSecret = AppSettings.Default.AuthTokenSecret;
+                credentials.AuthToken = simpleAES.DecryptString(AppSettings.Default.AuthToken);
+                credentials.AuthTokenSecret = simpleAES.DecryptString(AppSettings.Default.AuthTokenSecret);
                 credentials.UserId = AppSettings.Default.UserId;
             }
 
@@ -285,10 +293,8 @@ namespace FitbitUploader
                              "&durationMillis=" + exerciseData.Duration.TotalMilliseconds +
                              "&date=" + exerciseData.Time.ToString("yyyy-MM-dd");
 
-                if (!APIRequest("POST", uri, true)) continue;
-
-                if (AppSettings.Default.LastUpload < exerciseData.Time)
-                    AppSettings.Default.LastUpload = exerciseData.Time;
+                if (!APIRequest("POST", uri, true))
+                    continue;
 
                 if (!rowFound)
                 {
@@ -322,7 +328,6 @@ namespace FitbitUploader
 
             _dtUploaded.WriteXml(_uploadedFile);
             _dtUploaded.WriteXmlSchema(_uploadedSchema);
-            lblLastUploaded.Text = AppSettings.Default.LastUpload.ToString();
             AppSettings.Default.Save();
 
         } /*btnCreateActivity_Click*/

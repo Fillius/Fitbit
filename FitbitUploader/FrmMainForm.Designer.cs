@@ -47,7 +47,6 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnPolar = new System.Windows.Forms.Button();
-            this.lblLastUploaded = new System.Windows.Forms.Label();
             this.btnBPLoad = new System.Windows.Forms.Button();
             this.btnBPUpload = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
@@ -232,14 +231,6 @@
             this.btnPolar.UseVisualStyleBackColor = true;
             this.btnPolar.Click += new System.EventHandler(this.btnPolar_Click);
             // 
-            // lblLastUploaded
-            // 
-            this.lblLastUploaded.AutoSize = true;
-            this.lblLastUploaded.Location = new System.Drawing.Point(165, 339);
-            this.lblLastUploaded.Name = "lblLastUploaded";
-            this.lblLastUploaded.Size = new System.Drawing.Size(0, 13);
-            this.lblLastUploaded.TabIndex = 20;
-            // 
             // btnBPLoad
             // 
             this.btnBPLoad.Location = new System.Drawing.Point(12, 470);
@@ -270,7 +261,7 @@
             this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
             // 
-            // MainForm
+            // FrmMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -278,7 +269,6 @@
             this.BackgroundImage = global::FitbitUploader.Properties.Resources.Fitbit_Ultra;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1017, 608);
-            this.Controls.Add(this.lblLastUploaded);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.btnBPUpload);
             this.Controls.Add(this.btnBPLoad);
@@ -292,7 +282,7 @@
             this.Controls.Add(this.groupBox4);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MainForm";
+            this.Name = "FrmMainForm";
             this.Text = "Fitbit Data Uploader";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBox4.ResumeLayout(false);
@@ -300,7 +290,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -318,7 +307,6 @@
         private System.Windows.Forms.RadioButton rdoDataType1;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnPolar;
-        private System.Windows.Forms.Label lblLastUploaded;
         private System.Windows.Forms.Button btnBPLoad;
         private System.Windows.Forms.Button btnBPUpload;
         private System.Windows.Forms.Button btnSettings;
