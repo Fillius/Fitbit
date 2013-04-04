@@ -46,10 +46,10 @@
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnPolar = new System.Windows.Forms.Button();
             this.btnBPLoad = new System.Windows.Forms.Button();
             this.btnBPUpload = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
+            this.btnGetPolarSessions = new System.Windows.Forms.Button();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -111,7 +111,7 @@
             // 
             // btnUploadEntry
             // 
-            this.btnUploadEntry.Location = new System.Drawing.Point(203, 441);
+            this.btnUploadEntry.Location = new System.Drawing.Point(203, 470);
             this.btnUploadEntry.Name = "btnUploadEntry";
             this.btnUploadEntry.Size = new System.Drawing.Size(101, 23);
             this.btnUploadEntry.TabIndex = 14;
@@ -142,7 +142,7 @@
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridView1.Location = new System.Drawing.Point(279, -2);
+            this.dataGridView1.Location = new System.Drawing.Point(312, -2);
             this.dataGridView1.Name = "dataGridView1";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
@@ -152,12 +152,12 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dataGridView1.Size = new System.Drawing.Size(730, 335);
+            this.dataGridView1.Size = new System.Drawing.Size(697, 335);
             this.dataGridView1.TabIndex = 11;
             // 
             // btnLoadPolar
             // 
-            this.btnLoadPolar.Location = new System.Drawing.Point(12, 441);
+            this.btnLoadPolar.Location = new System.Drawing.Point(12, 383);
             this.btnLoadPolar.Name = "btnLoadPolar";
             this.btnLoadPolar.Size = new System.Drawing.Size(101, 23);
             this.btnLoadPolar.TabIndex = 12;
@@ -213,7 +213,7 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(12, 412);
+            this.btnClear.Location = new System.Drawing.Point(12, 470);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(101, 23);
             this.btnClear.TabIndex = 18;
@@ -221,19 +221,9 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // btnPolar
-            // 
-            this.btnPolar.Location = new System.Drawing.Point(157, 372);
-            this.btnPolar.Name = "btnPolar";
-            this.btnPolar.Size = new System.Drawing.Size(147, 23);
-            this.btnPolar.TabIndex = 19;
-            this.btnPolar.Text = "PolarPersonalTrainer.com";
-            this.btnPolar.UseVisualStyleBackColor = true;
-            this.btnPolar.Click += new System.EventHandler(this.btnPolar_Click);
-            // 
             // btnBPLoad
             // 
-            this.btnBPLoad.Location = new System.Drawing.Point(12, 470);
+            this.btnBPLoad.Location = new System.Drawing.Point(12, 602);
             this.btnBPLoad.Name = "btnBPLoad";
             this.btnBPLoad.Size = new System.Drawing.Size(101, 23);
             this.btnBPLoad.TabIndex = 21;
@@ -243,7 +233,7 @@
             // 
             // btnBPUpload
             // 
-            this.btnBPUpload.Location = new System.Drawing.Point(203, 470);
+            this.btnBPUpload.Location = new System.Drawing.Point(137, 602);
             this.btnBPUpload.Name = "btnBPUpload";
             this.btnBPUpload.Size = new System.Drawing.Size(101, 23);
             this.btnBPUpload.TabIndex = 22;
@@ -253,26 +243,35 @@
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(12, 372);
+            this.btnSettings.Location = new System.Drawing.Point(203, 383);
             this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(112, 23);
+            this.btnSettings.Size = new System.Drawing.Size(101, 23);
             this.btnSettings.TabIndex = 23;
             this.btnSettings.Text = "Settings";
             this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+            // 
+            // btnGetPolarSessions
+            // 
+            this.btnGetPolarSessions.Location = new System.Drawing.Point(12, 412);
+            this.btnGetPolarSessions.Name = "btnGetPolarSessions";
+            this.btnGetPolarSessions.Size = new System.Drawing.Size(101, 36);
+            this.btnGetPolarSessions.TabIndex = 24;
+            this.btnGetPolarSessions.Text = "Download Polar Sessions";
+            this.btnGetPolarSessions.UseVisualStyleBackColor = true;
+            this.btnGetPolarSessions.Click += new System.EventHandler(this.btnGetPolarSessions_Click);
             // 
             // FrmMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.BackgroundImage = global::FitbitUploader.Properties.Resources.Fitbit_Ultra;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1017, 608);
+            this.ClientSize = new System.Drawing.Size(1000, 647);
+            this.Controls.Add(this.btnGetPolarSessions);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.btnBPUpload);
             this.Controls.Add(this.btnBPLoad);
-            this.Controls.Add(this.btnPolar);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.dataGridView2);
@@ -306,10 +305,10 @@
         private System.Windows.Forms.RadioButton rdoDataType2;
         private System.Windows.Forms.RadioButton rdoDataType1;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnPolar;
         private System.Windows.Forms.Button btnBPLoad;
         private System.Windows.Forms.Button btnBPUpload;
         private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Button btnGetPolarSessions;
     }
 }
 

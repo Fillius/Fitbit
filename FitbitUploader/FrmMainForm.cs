@@ -15,13 +15,15 @@ using PolarPersonalTrainerLib;
 using Fitbit.Api;
 using Fitbit.Models;
 using FitbitUploader.Encryption;
+using FitbitUploader.Properties;
+using RestSharp;
 
 namespace FitbitUploader
 {
     public partial class FrmMainForm : Form
     {
-        FrmBrowser _authorizeForm;
-
+        FitbitClient fitbitClient = null;
+        IRestClient restClient = new RestClient();
         DataTable _dtExercises = new DataTable("exercises");
         DataTable _dtUploadResults = new DataTable("result");
         private DataTable _dtUploaded = new DataTable();
@@ -48,17 +50,12 @@ namespace FitbitUploader
             dataGridView1.DataSource = _dtExercises;
             dataGridView2.DataSource = _dtUploadResults;
 
-            Properties.Settings.Default.Setting = "Tested";
-            Properties.Settings.Default.Save();
-
             if (File.Exists(_uploadedFile) && File.Exists(_uploadedSchema))
             {
                 _dtUploaded.ReadXmlSchema(_uploadedSchema);
                 _dtUploaded.ReadXml(_uploadedFile);
             }
         }
-
-        public readonly oAuthFitbit _oauth = new oAuthFitbit();
 
         private void btnGetFitbitData_Click(object sender, EventArgs e)
         {
@@ -96,6 +93,7 @@ namespace FitbitUploader
                 var a = new Authenticator(consumerKey, consumerSecret, requestTokenUrl, accessTokenUrl, authorizeUrl);
                 var url = a.GetAuthUrlToken();
 
+                // Open the web browser for the user to authorize the application
                 var frmAuth = new FrmBrowser(url);
                 frmAuth.Show();
 
@@ -129,12 +127,9 @@ namespace FitbitUploader
                 credentials.UserId = AppSettings.Default.UserId;
             }
 
-            var fitbit = new FitbitClient(consumerKey, consumerSecret, credentials.AuthToken, credentials.AuthTokenSecret);
+            var fitbit = new FitbitClient(consumerKey, consumerSecret, credentials.AuthToken, credentials.AuthTokenSecret, restClient);
             //var profile = fitbit.GetUserProfile();
             //Console.WriteLine("Your last weight was {0}", profile.Weight);
-
-            btnUploadEntry.Enabled = true;
-            btnGetFitbitData.Enabled = true;
 
             if (AppSettings.Default.PolarXMLHistoryFile.Length > 0)
                 _uploadedFile = AppSettings.Default.PolarXMLHistoryFile;
@@ -178,15 +173,7 @@ namespace FitbitUploader
                     
                     xml.Load(filePicker.FileName);
 
-                    List<PPTExercise> exerciseList = PPTExtract.convertXmlToExercises(xml);
-
-                    foreach (PPTExercise exercise in exerciseList)
-                    {
-                        _dtExercises.Rows.Add(PPTConvert.convertExerciseToDataRow(exercise, _dtExercises));
-                    }
-
-                    dataGridView1.DataSource = _dtExercises;
-                    dataGridView1.AutoResizeColumns();
+                    LoadPolarXml(xml);
                 }
                 catch (Exception ex)
                 {
@@ -195,12 +182,22 @@ namespace FitbitUploader
             }
         } /* btnLoadPolar_Click */
 
+        private void LoadPolarXml(XmlDocument xml)
+        {
+            List<PPTExercise> exerciseList = PPTExtract.convertXmlToExercises(xml);
+
+            foreach (PPTExercise exercise in exerciseList)
+            {
+                _dtExercises.Rows.Add(PPTConvert.convertExerciseToDataRow(exercise, _dtExercises));
+            }
+
+            dataGridView1.DataSource = _dtExercises;
+            dataGridView1.AutoResizeColumns();
+        }
 
         private bool APIRequest(string method, string uri, bool showResults)
         {
-            if (string.IsNullOrEmpty(_oauth.Token)) _oauth.Token = AppSettings.Default.AuthToken;
-            if (string.IsNullOrEmpty(_oauth.TokenSecret)) _oauth.TokenSecret = AppSettings.Default.AuthTokenSecret;
-
+            // TODO upload activity, fitbitClient.
             var response = _oauth.APIWebRequest(method, uri, null);
 
             if (method == "DELETE" || !showResults)
@@ -234,7 +231,7 @@ namespace FitbitUploader
             dataGridView2.AutoResizeColumns();
 
             return true;
-        } /*PostRequest*/
+        } /* PostRequest */
 
 
         private void btnCreateActivity_Click(object sender, EventArgs e)
@@ -330,7 +327,7 @@ namespace FitbitUploader
             _dtUploaded.WriteXmlSchema(_uploadedSchema);
             AppSettings.Default.Save();
 
-        } /*btnCreateActivity_Click*/
+        } /* btnCreateActivity_Click */
 
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -357,7 +354,7 @@ namespace FitbitUploader
 
                 row--;
             }
-        } /*btnDelete_Click*/
+        } /* btnDelete_Click */
 
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -403,15 +400,6 @@ namespace FitbitUploader
 
                 APIRequest("POST", uri, true);
             }
-        }
-
-        private void btnPolar_Click(object sender, EventArgs e)
-        {
-            if (_authorizeForm == null || _authorizeForm.IsDisposed)
-                _authorizeForm = new FrmBrowser();
-
-            _authorizeForm.Show();
-            _authorizeForm.navigate("https://www.polarpersonaltrainer.com/user/calendar/?startDate=11/08/2012&endDate=16/08/2012&uid=", this);
         }
 
         private void ReadCsvData( DataTable dt, ref DataRow row, GenericParser csvParser, string col)
@@ -543,6 +531,29 @@ namespace FitbitUploader
         {
             var Settings = new FrmSettings(this);
             Settings.ShowDialog(this);
+        }
+
+        private void btnGetPolarSessions_Click(object sender, EventArgs e)
+        {
+            if (AppSettings.Default.PPTUser.Length == 0 ||
+                 AppSettings.Default.PPTPassword.Length == 0)
+            {
+                MessageBox.Show("To use this function, enter your PolarPersonalTrainer.com username and password in the settings menu");
+                return;
+            }
+
+            SimpleAES simpleAES = new SimpleAES();
+
+            PPTExport exporter = new PPTExport(
+                simpleAES.DecryptString(AppSettings.Default.PPTUser),
+                simpleAES.DecryptString(AppSettings.Default.PPTUser));
+
+            var xml = exporter.downloadSessions(DateTime.Today, DateTime.Today);
+
+            if (xml == null)
+                throw new InvalidDataException("No valid training sessions returned");
+
+            LoadPolarXml(xml);
         }
     }
 }

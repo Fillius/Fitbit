@@ -51,7 +51,10 @@ namespace FitbitUploader
         private void FrmBrowser_Shown(object sender, EventArgs e)
         {
             if (cookieJar != null)
-                webBrowser.
+            {
+                webBrowser.Document.Cookie = cookieJar.GetCookieHeader(new Uri(url));
+            }
+
             webBrowser.Navigate(url);
         }
 
