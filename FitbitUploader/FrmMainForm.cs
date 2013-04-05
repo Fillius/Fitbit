@@ -236,21 +236,6 @@ namespace FitbitUploader
 
         private void btnCreateActivity_Click(object sender, EventArgs e)
         {
-            var colTime = _dtExercises.Columns.IndexOf("time") >= 0;
-            var colSport = _dtExercises.Columns.IndexOf("sport") >= 0;
-            var colCalories = _dtExercises.Columns.IndexOf("result_calories") >= 0;
-            var colDuration = _dtExercises.Columns.IndexOf("result_duration") >= 0;
-            var colNote = _dtExercises.Columns.IndexOf("note") >= 0;
-            var colHrAverage = _dtExercises.Columns.IndexOf("time") >= 0;
-            var colHrMax = _dtExercises.Columns.IndexOf("sport") >= 0;
-            var colVo2Max = _dtExercises.Columns.IndexOf("result_calories") >= 0;
-
-            if (!colTime || !colSport || !colCalories || !colDuration)
-            {
-                MessageBox.Show("No valid data to upload");
-                return;
-            }
-
             for (var row = 0; row < dataGridView1.SelectedRows.Count; row++)
             {
                 var dbRow = ((DataRowView)dataGridView1.SelectedRows[row].DataBoundItem).Row;
@@ -259,7 +244,7 @@ namespace FitbitUploader
                     _dtUploaded = _dtExercises.Clone();
 
                 var rowFound = false;
-                var drs = _dtUploaded.Select("time like '" + dbRow["time"] + "'");
+                var drs = _dtUploaded.Select("time like '" + dbRow[PPTColumns.Time] + "'");
 
                 if (drs.Length != 0)
                 {
@@ -270,28 +255,22 @@ namespace FitbitUploader
                         continue;
                 }
 
-                var exerciseData = new ExerciseData
-                    {
-                        Time = Convert.ToDateTime(dataGridView1.SelectedRows[row].Cells["time"].Value),
-                        Sport = dataGridView1.SelectedRows[row].Cells["sport"].Value.ToString(),
-                        Calories = dataGridView1.SelectedRows[row].Cells["result_calories"].Value.ToString()
-                    };
+                var activityLog = new ActivityLog();
 
-                if (colNote)
-                    exerciseData.Note = dataGridView1.SelectedRows[row].Cells["note"].Value.ToString();
+                var dateTime = Convert.ToDateTime(dataGridView1.SelectedRows[row].Cells[PPTColumns.Time].Value);
 
-                TimeSpan.TryParse( dataGridView1.SelectedRows[row].Cells["result_duration"].Value.ToString(),
-                                   out exerciseData.Duration );
+                activityLog.StartTime = dateTime.ToShortTimeString();
+                activityLog.Name = dataGridView1.SelectedRows[row].Cells[PPTColumns.Sport].Value.ToString();
+                activityLog.Calories = Convert.ToInt32(dataGridView1.SelectedRows[row].Cells[PPTColumns.Calories].Value);
 
-                var uri = "https://api.fitbit.com/1/user/-/activities.xml?" +
-                             "activityName=" + exerciseData.Sport +
-                             "&manualCalories=" + exerciseData.Calories +
-                             "&startTime=" + exerciseData.Time.ToShortTimeString() +
-                             "&durationMillis=" + exerciseData.Duration.TotalMilliseconds +
-                             "&date=" + exerciseData.Time.ToString("yyyy-MM-dd");
+                var duration = new TimeSpan();
 
-                if (!APIRequest("POST", uri, true))
-                    continue;
+                TimeSpan.TryParse( dataGridView1.SelectedRows[row].Cells[PPTColumns.Duration].Value.ToString(),
+                                   out duration );
+
+                activityLog.Duration = Convert.ToInt32(duration.TotalMilliseconds);
+
+                fitbitClient.UploadActivity(activityLog, dateTime);
 
                 if (!rowFound)
                 {
@@ -300,7 +279,7 @@ namespace FitbitUploader
                     _dtUploaded.Rows.Add(uploadedRow);
                 }
 
-                if (colVo2Max)
+                /* TODO if (colVo2Max)
                 {
                     uri = "https://api.fitbit.com/1/user/-/heart.xml?tracker=Resting Heart Rate&heartRate=" + dataGridView1.SelectedRows[row].Cells["user-settings_vo2max"].Value
                           + "&date=" + exerciseData.Time.ToString("yyyy-MM-dd")
@@ -320,7 +299,7 @@ namespace FitbitUploader
                           + "&date=" + exerciseData.Time.ToString("yyyy-MM-dd")
                           + "&time=" + exerciseData.Time.ToShortTimeString();
                     APIRequest("POST", uri, false);
-                }
+                }*/
             }
 
             _dtUploaded.WriteXml(_uploadedFile);
