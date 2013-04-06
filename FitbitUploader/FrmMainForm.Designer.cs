@@ -266,8 +266,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.BackgroundImage = global::FitbitUploader.Properties.Resources.Fitbit_Ultra;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1000, 647);
+            this.ClientSize = new System.Drawing.Size(1050, 647);
             this.Controls.Add(this.btnGetPolarSessions);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.btnBPUpload);

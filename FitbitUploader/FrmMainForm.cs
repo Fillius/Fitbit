@@ -23,25 +23,8 @@ namespace FitbitUploader
     public partial class FrmMainForm : Form
     {
         FitbitClient fitbitClient = null;
-        IRestClient restClient = new RestClient();
         DataTable _dtExercises = new DataTable("exercises");
         DataTable _dtUploadResults = new DataTable("result");
-        private DataTable _dtUploaded = new DataTable();
-
-        public string _uploadedFile = Application.StartupPath + "\\uploaded.xml";
-        public string _uploadedSchema = Application.StartupPath + "\\uploaded_schema.xml";
-
-        struct ExerciseData
-        {
-            public DateTime Time;
-            public TimeSpan Duration;
-            public string Sport;
-            public string Calories;
-            public string Note;
-            public string Systolic;
-            public string Diastolic;
-            public string Pulse;
-        }
 
         public FrmMainForm()
         {
@@ -49,12 +32,6 @@ namespace FitbitUploader
 
             dataGridView1.DataSource = _dtExercises;
             dataGridView2.DataSource = _dtUploadResults;
-
-            if (File.Exists(_uploadedFile) && File.Exists(_uploadedSchema))
-            {
-                _dtUploaded.ReadXmlSchema(_uploadedSchema);
-                _dtUploaded.ReadXml(_uploadedFile);
-            }
         }
 
         private void btnGetFitbitData_Click(object sender, EventArgs e)
@@ -95,7 +72,7 @@ namespace FitbitUploader
 
                 // Open the web browser for the user to authorize the application
                 var frmAuth = new FrmBrowser(url);
-                frmAuth.Show();
+                frmAuth.ShowDialog();
 
                 var pin = frmAuth.getAuthPin();
 
@@ -127,15 +104,9 @@ namespace FitbitUploader
                 credentials.UserId = AppSettings.Default.UserId;
             }
 
-            var fitbit = new FitbitClient(consumerKey, consumerSecret, credentials.AuthToken, credentials.AuthTokenSecret, restClient);
+            fitbitClient = new FitbitClient(consumerKey, consumerSecret, credentials.AuthToken, credentials.AuthTokenSecret);
             //var profile = fitbit.GetUserProfile();
             //Console.WriteLine("Your last weight was {0}", profile.Weight);
-
-            if (AppSettings.Default.PolarXMLHistoryFile.Length > 0)
-                _uploadedFile = AppSettings.Default.PolarXMLHistoryFile;
-        
-            if (AppSettings.Default.PolarXMLHistorySchemaFile.Length > 0)
-                _uploadedSchema = AppSettings.Default.PolarXMLHistorySchemaFile;
         }
 
         private void FlattenData( ref DataTable dt, XmlNodeList xmlNodes, string prefix, ref DataRow row )
@@ -184,11 +155,18 @@ namespace FitbitUploader
 
         private void LoadPolarXml(XmlDocument xml)
         {
-            List<PPTExercise> exerciseList = PPTExtract.convertXmlToExercises(xml);
-
-            foreach (PPTExercise exercise in exerciseList)
+            try
             {
-                _dtExercises.Rows.Add(PPTConvert.convertExerciseToDataRow(exercise, _dtExercises));
+                List<PPTExercise> exerciseList = PPTExtract.convertXmlToExercises(xml);
+
+                foreach (PPTExercise exercise in exerciseList)
+                {
+                    _dtExercises.Rows.Add(PPTConvert.convertExerciseToDataRow(exercise, _dtExercises));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
             }
 
             dataGridView1.DataSource = _dtExercises;
@@ -197,7 +175,7 @@ namespace FitbitUploader
 
         private bool APIRequest(string method, string uri, bool showResults)
         {
-            // TODO upload activity, fitbitClient.
+            /* TODO upload activity, fitbitClient.
             var response = _oauth.APIWebRequest(method, uri, null);
 
             if (method == "DELETE" || !showResults)
@@ -229,9 +207,9 @@ namespace FitbitUploader
             }
             dataGridView2.DataSource = _dtUploadResults;
             dataGridView2.AutoResizeColumns();
-
+            */
             return true;
-        } /* PostRequest */
+        }
 
 
         private void btnCreateActivity_Click(object sender, EventArgs e)
@@ -240,78 +218,94 @@ namespace FitbitUploader
             {
                 var dbRow = ((DataRowView)dataGridView1.SelectedRows[row].DataBoundItem).Row;
 
-                if (_dtExercises.Columns.Count != _dtUploaded.Columns.Count)
-                    _dtUploaded = _dtExercises.Clone();
-
-                var rowFound = false;
-                var drs = _dtUploaded.Select("time like '" + dbRow[PPTColumns.Time] + "'");
-
-                if (drs.Length != 0)
-                {
-                    rowFound = true;
-                    if ( MessageBox.Show(
-                             "Exercise has already been uploaded, upload may cause duplicate entries",
-                             "Continue?", MessageBoxButtons.YesNo ) != DialogResult.Yes )
-                        continue;
-                }
-
                 var activityLog = new ActivityLog();
 
-                var dateTime = Convert.ToDateTime(dataGridView1.SelectedRows[row].Cells[PPTColumns.Time].Value);
+                var dateTime = Convert.ToDateTime(dbRow[PPTColumns.Time]); //dataGridView1.SelectedRows[row].Cells[PPTColumns.Time].Value);
 
-                activityLog.StartTime = dateTime.ToShortTimeString();
-                activityLog.Name = dataGridView1.SelectedRows[row].Cells[PPTColumns.Sport].Value.ToString();
-                activityLog.Calories = Convert.ToInt32(dataGridView1.SelectedRows[row].Cells[PPTColumns.Calories].Value);
+                activityLog.StartTime = dateTime.ToString("HH:mm");
+                activityLog.Name = dbRow[PPTColumns.Sport].ToString(); //dataGridView1.SelectedRows[row].Cells[PPTColumns.Sport].Value.ToString();
+                activityLog.Calories = Convert.ToInt32(dbRow[PPTColumns.Calories]); //dataGridView1.SelectedRows[row].Cells[PPTColumns.Calories].Value);
 
                 var duration = new TimeSpan();
 
-                TimeSpan.TryParse( dataGridView1.SelectedRows[row].Cells[PPTColumns.Duration].Value.ToString(),
+                TimeSpan.TryParse( dbRow[PPTColumns.Duration].ToString(),//dataGridView1.SelectedRows[row].Cells[PPTColumns.Duration].Value.ToString(),
                                    out duration );
 
                 activityLog.Duration = Convert.ToInt32(duration.TotalMilliseconds);
 
-                fitbitClient.UploadActivity(activityLog, dateTime);
+                var existingActivity = fitbitClient.GetDayActivity(dateTime);
+                bool activityFound = false;
 
-                if (!rowFound)
+                if (existingActivity != null)
                 {
-                    var uploadedRow = _dtUploaded.NewRow();
-                    uploadedRow.ItemArray = dbRow.ItemArray;
-                    _dtUploaded.Rows.Add(uploadedRow);
+                    foreach (ActivityLog existingActivityLog in existingActivity.Activities)
+                    {
+                        if (existingActivityLog.Calories == activityLog.Calories &&
+                            existingActivityLog.Duration == activityLog.Duration)
+                        {
+                            // Delete any matching excercises from MapMyFitness as they have incorrect values
+                            if (existingActivityLog.Name == "Run / Jog - from MapMyFitness")
+                            {
+                                try
+                                {
+                                    fitbitClient.DeleteActivity(existingActivityLog.LogId);
+                                }
+                                catch { }
+                            }
+                            else if (existingActivityLog.StartTime == activityLog.StartTime)
+                            {
+                                activityFound = true;
+                            }
+                        }
+                    }
                 }
 
-                /* TODO if (colVo2Max)
+                if (dateTime > AppSettings.Default.LastUploadedSession)
+                    AppSettings.Default.LastUploadedSession = dateTime;
+
+                if (activityFound)
+                    continue;
+
+                try
                 {
-                    uri = "https://api.fitbit.com/1/user/-/heart.xml?tracker=Resting Heart Rate&heartRate=" + dataGridView1.SelectedRows[row].Cells["user-settings_vo2max"].Value
-                          + "&date=" + exerciseData.Time.ToString("yyyy-MM-dd")
-                          + "&time=" + exerciseData.Time.ToShortTimeString();
-                    APIRequest("POST", uri, false);
+                    fitbitClient.UploadActivity(activityLog, dateTime);
+
+                    UploadHR(dateTime, "V02Max", Convert.ToInt32(dbRow[PPTColumns.VO2Max]));
+                    UploadHR(dateTime, "Resting Heart Rate", Convert.ToInt32(dbRow[PPTColumns.RestingHR]));
+                    UploadHR(dateTime, "Normal Heart Rate", Convert.ToInt32(dbRow[PPTColumns.AverageHR]));
+                    UploadHR(dateTime, "Exertive Heart Rate", Convert.ToInt32(dbRow[PPTColumns.MaximumHR]));
                 }
-                if (colHrAverage)
+                catch (FitbitException ex)
                 {
-                    uri = "https://api.fitbit.com/1/user/-/heart.xml?tracker=Normal Heart Rate&heartRate=" + dataGridView1.SelectedRows[row].Cells["heart-rate_average"].Value
-                          + "&date=" + exerciseData.Time.ToString("yyyy-MM-dd")
-                          + "&time=" + exerciseData.Time.ToShortTimeString();
-                    APIRequest("POST", uri, false);
+                    MessageBox.Show("HttpStatus: " + ex.HttpStatusCode.ToString() + "Upload error: " + ex.Message);
                 }
-                if (colHrMax)
-                {
-                    uri = "https://api.fitbit.com/1/user/-/heart.xml?tracker=Exertive Heart Rate&heartRate=" + dataGridView1.SelectedRows[row].Cells["heart-rate_maximum"].Value
-                          + "&date=" + exerciseData.Time.ToString("yyyy-MM-dd")
-                          + "&time=" + exerciseData.Time.ToShortTimeString();
-                    APIRequest("POST", uri, false);
-                }*/
             }
-
-            _dtUploaded.WriteXml(_uploadedFile);
-            _dtUploaded.WriteXmlSchema(_uploadedSchema);
+            MessageBox.Show("Uploaded Polar training sessions to Fitbit");
             AppSettings.Default.Save();
+        }
 
-        } /* btnCreateActivity_Click */
+        private void UploadHR(DateTime dateTime, string tracker, int heartRate)
+        {
+            HeartLog heartLog = new HeartLog();
 
+            heartLog.Date = dateTime.ToString("yyyy-MM-dd");
+            heartLog.Time = dateTime.ToString("HH:mm");
+            heartLog.Tracker = tracker;
+            heartLog.HeartRate = heartRate;
+
+            try
+            {
+                fitbitClient.UploadHR(heartLog);
+            }
+            catch (FitbitException ex)
+            {
+                MessageBox.Show("Fitbit error uploading HR: " + ex.Message);
+            }
+        }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            var colHeartLogId = _dtUploadResults.Columns.IndexOf("heartLog_logId") >= 0;
+            /*var colHeartLogId = _dtUploadResults.Columns.IndexOf("heartLog_logId") >= 0;
             var colActivityLogId = _dtUploadResults.Columns.IndexOf("activityLog_logId") >= 0;
             var colLogId = _dtUploadResults.Columns.IndexOf("logId") >= 0;
             var uri = "https://api.fitbit.com";
@@ -332,9 +326,8 @@ namespace FitbitUploader
                 dataGridView2.Rows.RemoveAt(row);
 
                 row--;
-            }
+            }*/
         } /* btnDelete_Click */
-
 
         private void btnClear_Click(object sender, EventArgs e)
         {
@@ -342,43 +335,6 @@ namespace FitbitUploader
             _dtExercises.Clear();
             _dtUploadResults.Columns.Clear();
             _dtExercises.Columns.Clear();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            String uri;
-            var colTime = _dtExercises.Columns.IndexOf("time") >= 0;
-            var colSport = _dtExercises.Columns.IndexOf("sport") >= 0;
-            var colCalories = _dtExercises.Columns.IndexOf("result_calories") >= 0;
-            var colDuration = _dtExercises.Columns.IndexOf("result_duration") >= 0;
-
-            if (!colTime || !colSport || !colCalories || !colDuration)
-            {
-                MessageBox.Show("No valid data to upload");
-                return;
-            }
-
-            for (var row = 0; row < dataGridView1.SelectedRows.Count; row++)
-            {
-                var exerciseData = new ExerciseData
-                {
-                    Time = Convert.ToDateTime(dataGridView1.SelectedRows[row].Cells["time"].Value),
-                    Sport = dataGridView1.SelectedRows[row].Cells["sport"].Value.ToString(),
-                    Calories = dataGridView1.SelectedRows[row].Cells["result_calories"].Value.ToString()
-                };
-
-                TimeSpan.TryParse(dataGridView1.SelectedRows[row].Cells["result_duration"].Value.ToString(),
-                                   out exerciseData.Duration);
-
-                uri = "https://api.fitbit.com/1/user/-/activities.xml?" +
-                      "activityName=" + exerciseData.Sport +
-                      "&manualCalories=" + exerciseData.Calories +
-                      "&startTime=" + exerciseData.Time.ToShortTimeString() +
-                      "&durationMillis=" + exerciseData.Duration.TotalMilliseconds +
-                      "&date=" + exerciseData.Time.ToString("yyyy-MM-dd");
-
-                APIRequest("POST", uri, true);
-            }
         }
 
         private void ReadCsvData( DataTable dt, ref DataRow row, GenericParser csvParser, string col)
@@ -431,6 +387,7 @@ namespace FitbitUploader
 
         private void btnBPUpload_Click(object sender, EventArgs e)
         {
+            /* TODO
             var colSystolic = _dtExercises.Columns.IndexOf("Systolic") >= 0;
             var colDiastolic = _dtExercises.Columns.IndexOf("Diastolic") >= 0;
             var colPulse = _dtExercises.Columns.IndexOf("Pulse") >= 0;
@@ -461,6 +418,7 @@ namespace FitbitUploader
                         continue;
                 }*/
 
+                /* TODO
                 var exerciseData = new
                     ExerciseData
                     {
@@ -489,7 +447,7 @@ namespace FitbitUploader
                     _dtUploaded.Rows.Add(uploadedRow);
                 }
 
-                 */
+                 *
                 if (colPulse)
                 {
                     uri = "https://api.fitbit.com/1/user/-/heart.xml?tracker=BP Measurement&heartRate=" +
@@ -523,16 +481,25 @@ namespace FitbitUploader
 
             SimpleAES simpleAES = new SimpleAES();
 
-            PPTExport exporter = new PPTExport(
-                simpleAES.DecryptString(AppSettings.Default.PPTUser),
-                simpleAES.DecryptString(AppSettings.Default.PPTUser));
+            try
+            {
+                PPTExport exporter = new PPTExport(
+                    simpleAES.DecryptString(AppSettings.Default.PPTUser),
+                    simpleAES.DecryptString(AppSettings.Default.PPTPassword));
+                
+                var startDate = AppSettings.Default.LastUploadedSession;
 
-            var xml = exporter.downloadSessions(DateTime.Today, DateTime.Today);
+                var xml = exporter.downloadSessions(startDate, DateTime.Today);
 
-            if (xml == null)
-                throw new InvalidDataException("No valid training sessions returned");
+                if (xml == null)
+                    throw new PPTException("No valid training sessions returned");
 
-            LoadPolarXml(xml);
+                LoadPolarXml(xml);
+            }
+            catch (PPTException ex)
+            {
+                MessageBox.Show("PolarPersonalTrainer error: " + ex.Message);
+            }
         }
     }
 }

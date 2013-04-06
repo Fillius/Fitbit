@@ -50,30 +50,6 @@ namespace FitbitUploader.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string PolarXMLHistoryFile {
-            get {
-                return ((string)(this["PolarXMLHistoryFile"]));
-            }
-            set {
-                this["PolarXMLHistoryFile"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string PolarXMLHistorySchemaFile {
-            get {
-                return ((string)(this["PolarXMLHistorySchemaFile"]));
-            }
-            set {
-                this["PolarXMLHistorySchemaFile"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string UserId {
             get {
                 return ((string)(this["UserId"]));
@@ -104,6 +80,17 @@ namespace FitbitUploader.Properties {
             }
             set {
                 this["PPTPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime LastUploadedSession {
+            get {
+                return ((global::System.DateTime)(this["LastUploadedSession"]));
+            }
+            set {
+                this["LastUploadedSession"] = value;
             }
         }
     }

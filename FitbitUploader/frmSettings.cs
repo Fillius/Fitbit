@@ -6,12 +6,15 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using FitbitUploader.Properties;
+using FitbitUploader.Encryption;
 
 namespace FitbitUploader
 {
     public partial class FrmSettings : Form
     {
         private FrmMainForm mainForm;
+
+        private static SimpleAES simpleAES = new SimpleAES();
 
         public FrmSettings(FrmMainForm frmMain)
         {
@@ -23,34 +26,6 @@ namespace FitbitUploader
                 btnCreateAuthorization.Text = "Re-Authorize";
         }
 
-        private void btnPolarXMLHistory_Click(object sender, EventArgs e)
-        {
-            var filePicker = new OpenFileDialog();
-            filePicker.DefaultExt = ".xml";
-            filePicker.Filter = "Polar XML History File (*.xml)|*.xml";
-
-            if (filePicker.ShowDialog() == DialogResult.OK)
-            {
-                AppSettings.Default.PolarXMLHistoryFile = filePicker.FileName;
-                mainForm._uploadedFile = filePicker.FileName;
-                AppSettings.Default.Save();
-            }
-        }
-
-        private void btnPolarXMLHistorySchema_Click(object sender, EventArgs e)
-        {
-            var filePicker = new OpenFileDialog();
-            filePicker.DefaultExt = ".xml";
-            filePicker.Filter = "Polar XML History Schema File (*.xml)|*.xml";
-
-            if (filePicker.ShowDialog() == DialogResult.OK)
-            {
-                AppSettings.Default.PolarXMLHistorySchemaFile = filePicker.FileName;
-                mainForm._uploadedSchema = filePicker.FileName;
-                AppSettings.Default.Save();
-            }
-        }
-
         private void btnCreateAuthorization_Click(object sender, EventArgs e)
         {
             AppSettings.Default.AuthToken = "";
@@ -59,6 +34,25 @@ namespace FitbitUploader
             AppSettings.Default.Save();
 
             MessageBox.Show("Title", "Please restart the program to re-authorize it to Fitbit");
+        }
+
+        private void FrmSettings_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SimpleAES simpleAES = new SimpleAES();
+
+            AppSettings.Default.PPTUser = simpleAES.EncryptToString(txtPolarUser.Text);
+            AppSettings.Default.PPTPassword = simpleAES.EncryptToString(txtPolarPassword.Text);
+
+            AppSettings.Default.Save();
+        }
+
+        private void FrmSettings_Load(object sender, EventArgs e)
+        {
+            if (AppSettings.Default.PPTUser.Length > 0)
+                txtPolarUser.Text = simpleAES.DecryptString(AppSettings.Default.PPTUser);
+
+            if (AppSettings.Default.PPTPassword.Length > 0)
+                txtPolarPassword.Text = simpleAES.DecryptString(AppSettings.Default.PPTPassword);
         }
     }
 }
