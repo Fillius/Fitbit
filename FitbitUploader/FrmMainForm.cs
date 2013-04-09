@@ -106,8 +106,6 @@ namespace FitbitUploader
             }
 
             fitbitClient = new FitbitClient(consumerKey, consumerSecret, credentials.AuthToken, credentials.AuthTokenSecret);
-            //var profile = fitbit.GetUserProfile();
-            //Console.WriteLine("Your last weight was {0}", profile.Weight);
         }
 
         private void FlattenData( ref DataTable dt, XmlNodeList xmlNodes, string prefix, ref DataRow row )
@@ -212,6 +210,17 @@ namespace FitbitUploader
             return true;
         }
 
+        private ActivityLog convertPPTExerciseToActivityLog(PPTExercise exercise)
+        {
+            ActivityLog activityLog = new ActivityLog();
+
+            activityLog.StartTime = exercise.time.ToString("HH:mm");
+            activityLog.Name = exercise.sport;
+            activityLog.Calories = exercise.calories;
+            activityLog.Duration = Convert.ToInt32(exercise.duration.TotalMilliseconds);
+
+            return activityLog;
+        }
 
         private void btnCreateActivity_Click(object sender, EventArgs e)
         {
@@ -220,23 +229,11 @@ namespace FitbitUploader
 
             for (var row = 0; row < dataGridView1.SelectedRows.Count; row++)
             {
-                var dbRow = ((DataRowView)dataGridView1.SelectedRows[row].DataBoundItem).Row;
+                PPTExercise exercise = PPTConvert.convertDataRowToExercise(((DataRowView)dataGridView1.SelectedRows[row].DataBoundItem).Row);
 
-                var activityLog = new ActivityLog();
+                var activityLog = convertPPTExerciseToActivityLog(exercise);
 
-                var dateTime = Convert.ToDateTime(dbRow[PPTColumns.Time]);
-
-                activityLog.StartTime = dateTime.ToString("HH:mm");
-                activityLog.Name = dbRow[PPTColumns.Sport].ToString();
-                activityLog.Calories = Convert.ToInt32(dbRow[PPTColumns.Calories]);
-
-                var duration = new TimeSpan();
-
-                TimeSpan.TryParse( dbRow[PPTColumns.Duration].ToString(), out duration );
-
-                activityLog.Duration = Convert.ToInt32(duration.TotalMilliseconds);
-
-                var existingActivity = fitbitClient.GetDayActivity(dateTime);
+                var existingActivity = fitbitClient.GetDayActivity(exercise.time);
                 bool activityFound = false;
 
                 Thread activityDeleteThread = null;
@@ -269,8 +266,8 @@ namespace FitbitUploader
                     }
                 }
 
-                if (dateTime > AppSettings.Default.LastUploadedSession)
-                    AppSettings.Default.LastUploadedSession = dateTime;
+                if (exercise.time > AppSettings.Default.LastUploadedSession)
+                    AppSettings.Default.LastUploadedSession = exercise.time;
 
                 if (activityFound)
                 {
@@ -280,27 +277,39 @@ namespace FitbitUploader
 
                 try
                 {
-                    Thread uploadActivityThread = new Thread(() => fitbitClient.UploadActivity(activityLog, dateTime));
-
-                    Thread v02MaxThread = new Thread(() => UploadHR(dateTime, "V02Max", Convert.ToInt32(dbRow[PPTColumns.VO2Max])));
-                    Thread restingHRThread = new Thread(() => UploadHR(dateTime, "Resting Heart Rate", Convert.ToInt32(dbRow[PPTColumns.RestingHR])));
-                    Thread averageHRThread = new Thread(() => UploadHR(dateTime, "Normal Heart Rate", Convert.ToInt32(dbRow[PPTColumns.AverageHR])));
-                    Thread maxThread = new Thread(() => UploadHR(dateTime, "Exertive Heart Rate", Convert.ToInt32(dbRow[PPTColumns.MaximumHR])));
-
+                    Thread uploadActivityThread = new Thread(() => fitbitClient.UploadActivity(activityLog, exercise.time));
                     uploadActivityThread.Start();
-                    v02MaxThread.Start();
-                    restingHRThread.Start();
-                    averageHRThread.Start();
-                    maxThread.Start();
+
+                    Thread v02MaxThread = null;
+                    Thread restingHRThread = null;
+                    Thread averageHRThread = null;
+                    Thread maxThread = null;
+
+                    if (AppSettings.Default.UploadHR)
+                    {
+                        var hr = exercise.heartRate;
+                        v02MaxThread = new Thread(() => UploadHR(exercise.time, "V02Max", hr.vo2Max));
+                        restingHRThread = new Thread(() => UploadHR(exercise.time, "Resting Heart Rate", hr.resting));
+                        averageHRThread = new Thread(() => UploadHR(exercise.time, "Normal Heart Rate", hr.average));
+                        maxThread = new Thread(() => UploadHR(exercise.time, "Exertive Heart Rate", hr.maximum));
+
+                        v02MaxThread.Start();
+                        restingHRThread.Start();
+                        averageHRThread.Start();
+                        maxThread.Start();
+                    }
 
                     uploadActivityThread.Join();
 
                     uploadedCount++;
 
-                    v02MaxThread.Join();
-                    restingHRThread.Join();
-                    averageHRThread.Join();
-                    maxThread.Join();
+                    if (AppSettings.Default.UploadHR)
+                    {
+                        v02MaxThread.Join();
+                        restingHRThread.Join();
+                        averageHRThread.Join();
+                        maxThread.Join();
+                    }
 
                     if (activityDeleteThread != null)
                         activityDeleteThread.Join();

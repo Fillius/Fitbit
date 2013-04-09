@@ -53,6 +53,14 @@ namespace FitbitUploader
 
             if (AppSettings.Default.PPTPassword.Length > 0)
                 txtPolarPassword.Text = simpleAES.DecryptString(AppSettings.Default.PPTPassword);
+
+            dateTimePicker1.Value = AppSettings.Default.LastUploadedSession;
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            AppSettings.Default.LastUploadedSession = dateTimePicker1.Value;
+            AppSettings.Default.Save();
         }
     }
 }
