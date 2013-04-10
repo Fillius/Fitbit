@@ -12,18 +12,11 @@ namespace FitbitUploader
 {
     public partial class FrmSettings : Form
     {
-        private FrmMainForm mainForm;
-
         private static SimpleAES simpleAES = new SimpleAES();
 
-        public FrmSettings(FrmMainForm frmMain)
+        public FrmSettings()
         {
             InitializeComponent();
-
-            mainForm = frmMain;
-
-            if (AppSettings.Default.AuthToken.Length > 0)
-                btnCreateAuthorization.Text = "Re-Authorize";
         }
 
         private void btnCreateAuthorization_Click(object sender, EventArgs e)
@@ -33,17 +26,27 @@ namespace FitbitUploader
             AppSettings.Default.UserId = "";
             AppSettings.Default.Save();
 
-            MessageBox.Show("Title", "Please restart the program to re-authorize it to Fitbit");
+            MessageBox.Show("Please restart the program to re-authorize it to Fitbit");
         }
 
-        private void FrmSettings_FormClosing(object sender, FormClosingEventArgs e)
+        private void savePolarUser()
         {
+            if (txtPolarUser.Text == "Username")
+                return;
+
             SimpleAES simpleAES = new SimpleAES();
 
             AppSettings.Default.PPTUser = simpleAES.EncryptToString(txtPolarUser.Text);
-            AppSettings.Default.PPTPassword = simpleAES.EncryptToString(txtPolarPassword.Text);
+        }
 
-            AppSettings.Default.Save();
+        private void savePolarPassword()
+        {
+            if (txtPolarPassword.Text == "Password")
+                return;
+
+            SimpleAES simpleAES = new SimpleAES();
+
+            AppSettings.Default.PPTPassword = simpleAES.EncryptToString(txtPolarPassword.Text);
         }
 
         private void FrmSettings_Load(object sender, EventArgs e)
@@ -54,13 +57,42 @@ namespace FitbitUploader
             if (AppSettings.Default.PPTPassword.Length > 0)
                 txtPolarPassword.Text = simpleAES.DecryptString(AppSettings.Default.PPTPassword);
 
-            dateTimePicker1.Value = AppSettings.Default.LastUploadedSession;
+            if (AppSettings.Default.LastUploadedSession.Equals(new DateTime()))
+                dateTimePicker1.Value = DateTime.Today.Subtract(new TimeSpan(30, 0, 0, 0));
+            else
+                dateTimePicker1.Value = AppSettings.Default.LastUploadedSession;
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
             AppSettings.Default.LastUploadedSession = dateTimePicker1.Value;
+        }
+
+        private void txtPolarUser_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                savePolarUser();
+        }
+
+        private void FrmSettings_FormClosing(object sender, FormClosingEventArgs e)
+        {
             AppSettings.Default.Save();
+        }
+
+        private void txtPolarPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                savePolarPassword();
+        }
+
+        private void txtPolarUser_Leave(object sender, EventArgs e)
+        {
+            savePolarUser();
+        }
+
+        private void txtPolarPassword_Leave(object sender, EventArgs e)
+        {
+            savePolarPassword();
         }
     }
 }

@@ -16,7 +16,6 @@ using Fitbit.Api;
 using Fitbit.Models;
 using FitbitUploader.Encryption;
 using FitbitUploader.Properties;
-using RestSharp;
 using System.Threading;
 
 namespace FitbitUploader
@@ -57,55 +56,71 @@ namespace FitbitUploader
             var consumerSecret = "b1ba6cc29e0a44768b4969ae393e241b";
             AuthCredential credentials = null;
 
-            // Check if we have already received our authorized credentials
-            if ( AppSettings.Default.AuthToken.Length == 0 ||
-                 AppSettings.Default.AuthTokenSecret.Length == 0 )
+            try
             {
-                // Get the Auth credentials for the first time by directoring the
-                // user to the fitbit site to get a PIN.
+                // Check if we have already received our authorized credentials
+                if (string.IsNullOrWhiteSpace(AppSettings.Default.AuthToken) ||
+                     string.IsNullOrWhiteSpace(AppSettings.Default.AuthTokenSecret))
+                {
+                    // Get the Auth credentials for the first time by directoring the
+                    // user to the fitbit site to get a PIN.
 
-                var requestTokenUrl = "http://api.fitbit.com/oauth/request_token";
-                var accessTokenUrl = "http://api.fitbit.com/oauth/access_token";
-                var authorizeUrl = "http://www.fitbit.com/oauth/authorize";
+                    var requestTokenUrl = "http://api.fitbit.com/oauth/request_token";
+                    var accessTokenUrl = "http://api.fitbit.com/oauth/access_token";
+                    var authorizeUrl = "http://www.fitbit.com/oauth/authorize";
 
-                var a = new Authenticator(consumerKey, consumerSecret, requestTokenUrl, accessTokenUrl, authorizeUrl);
-                var url = a.GetAuthUrlToken();
+                    var a = new Authenticator(consumerKey, consumerSecret, requestTokenUrl, accessTokenUrl, authorizeUrl);
+                    var url = a.GetAuthUrlToken();
 
-                // Open the web browser for the user to authorize the application
-                var frmAuth = new FrmBrowser(url);
-                frmAuth.ShowDialog();
+                    // Open the web browser for the user to authorize the application
+                    var frmAuth = new FrmBrowser(url);
+                    frmAuth.ShowDialog();
 
-                var pin = frmAuth.getAuthPin();
+                    var pin = frmAuth.getAuthPin();
 
-                frmAuth.Dispose();
+                    frmAuth.Dispose();
 
-                if (pin == null)
-                    throw new InvalidDataException("Did not get a valid authorisation pin");
+                    if (String.IsNullOrWhiteSpace(pin))
+                    {
+                        // TODO make own exception
+                        throw new InvalidDataException("Did not get a valid authorisation pin");
+                    }
 
-                credentials = a.GetAuthCredentialFromPin(pin);
+                    credentials = a.GetAuthCredentialFromPin(pin);
 
-                if (credentials == null)
-                    throw new InvalidDataException("Could not get authorization credentials using the authorisation pin provided");
+                    if (credentials == null ||
+                        string.IsNullOrWhiteSpace(credentials.AuthToken) ||
+                        string.IsNullOrWhiteSpace(credentials.AuthTokenSecret))
+                    {
+                        // TODO make own exception
+                        throw new InvalidDataException("Could not get authorization credentials using the authorisation pin provided");
+                    }
 
-                SimpleAES simpleAES = new SimpleAES();
+                    SimpleAES simpleAES = new SimpleAES();
 
-                AppSettings.Default.AuthToken = simpleAES.EncryptToString(credentials.AuthToken);
-                AppSettings.Default.AuthTokenSecret = simpleAES.EncryptToString(credentials.AuthTokenSecret);
-                AppSettings.Default.UserId = credentials.UserId;
+                    AppSettings.Default.AuthToken = simpleAES.EncryptToString(credentials.AuthToken);
+                    AppSettings.Default.AuthTokenSecret = simpleAES.EncryptToString(credentials.AuthTokenSecret);
+                    AppSettings.Default.UserId = credentials.UserId;
 
-                AppSettings.Default.Save();
+                    AppSettings.Default.Save();
+                }
+                else
+                {
+                    SimpleAES simpleAES = new SimpleAES();
+
+                    credentials = new AuthCredential();
+                    credentials.AuthToken = simpleAES.DecryptString(AppSettings.Default.AuthToken);
+                    credentials.AuthTokenSecret = simpleAES.DecryptString(AppSettings.Default.AuthTokenSecret);
+                    credentials.UserId = AppSettings.Default.UserId;
+                }
+
+                fitbitClient = new FitbitClient(consumerKey, consumerSecret, credentials.AuthToken, credentials.AuthTokenSecret);
             }
-            else
+            catch (Exception ex)
             {
-                SimpleAES simpleAES = new SimpleAES();
-
-                credentials = new AuthCredential();
-                credentials.AuthToken = simpleAES.DecryptString(AppSettings.Default.AuthToken);
-                credentials.AuthTokenSecret = simpleAES.DecryptString(AppSettings.Default.AuthTokenSecret);
-                credentials.UserId = AppSettings.Default.UserId;
+                MessageBox.Show(ex.Message);
+                Application.Exit();
             }
-
-            fitbitClient = new FitbitClient(consumerKey, consumerSecret, credentials.AuthToken, credentials.AuthTokenSecret);
         }
 
         private void FlattenData( ref DataTable dt, XmlNodeList xmlNodes, string prefix, ref DataRow row )
@@ -285,9 +300,10 @@ namespace FitbitUploader
                     Thread averageHRThread = null;
                     Thread maxThread = null;
 
-                    if (AppSettings.Default.UploadHR)
+                    var hr = exercise.heartRate;
+
+                    if (AppSettings.Default.UploadHR && hr != null)
                     {
-                        var hr = exercise.heartRate;
                         v02MaxThread = new Thread(() => UploadHR(exercise.time, "V02Max", hr.vo2Max));
                         restingHRThread = new Thread(() => UploadHR(exercise.time, "Resting Heart Rate", hr.resting));
                         averageHRThread = new Thread(() => UploadHR(exercise.time, "Normal Heart Rate", hr.average));
@@ -303,7 +319,7 @@ namespace FitbitUploader
 
                     uploadedCount++;
 
-                    if (AppSettings.Default.UploadHR)
+                    if (AppSettings.Default.UploadHR && hr != null)
                     {
                         v02MaxThread.Join();
                         restingHRThread.Join();
@@ -505,7 +521,7 @@ namespace FitbitUploader
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            var Settings = new FrmSettings(this);
+            var Settings = new FrmSettings();
             Settings.ShowDialog(this);
         }
 
