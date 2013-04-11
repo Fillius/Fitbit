@@ -36,18 +36,22 @@ namespace FitbitUploader
 
         private void btnGetFitbitData_Click(object sender, EventArgs e)
         {
-            var date = dateDay.Value.ToString("yyyy-MM-dd");
-
-            String path;
-
             if (rdoDataType1.Checked)
-                path = "heart/date/";
+            {
+                //TODO fitbitClient.getHeartLog(dateDay.Value);
+            }
             else if (rdoDataType2.Checked)
-                path = "activities/date/";
+            {
+                var activity = fitbitClient.GetDayActivity(dateDay.Value);
+
+                //TODO do something with the data
+                MessageBox.Show("On " + dateDay.Value.ToShortDateString() + " you burned " +
+                                activity.Summary.CaloriesOut.ToString() + " calories");
+            }
             else
                 return;
 
-            APIRequest("GET", "https://api.fitbit.com/1/user/-/" + path + date + ".xml", true);
+            //APIRequest("GET", "https://api.fitbit.com/1/user/-/" + path + date + ".xml", true);
         }
 
         private void MainForm_Load(object sender, EventArgs e)

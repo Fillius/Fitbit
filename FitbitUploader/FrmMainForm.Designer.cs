@@ -100,7 +100,6 @@
             // 
             // btnGetFitbitData
             // 
-            this.btnGetFitbitData.Enabled = false;
             this.btnGetFitbitData.Location = new System.Drawing.Point(97, 62);
             this.btnGetFitbitData.Name = "btnGetFitbitData";
             this.btnGetFitbitData.Size = new System.Drawing.Size(116, 23);
