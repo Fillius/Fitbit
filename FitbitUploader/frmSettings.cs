@@ -49,6 +49,11 @@ namespace FitbitUploader
             AppSettings.Default.PPTPassword = simpleAES.EncryptToString(txtPolarPassword.Text);
         }
 
+        private void savePolarRequireSport()
+        {
+            AppSettings.Default.PPTRequireSport = chkRequireSport.Checked;
+        }
+
         private void FrmSettings_Load(object sender, EventArgs e)
         {
             if (AppSettings.Default.PPTUser.Length > 0)
@@ -56,6 +61,8 @@ namespace FitbitUploader
 
             if (AppSettings.Default.PPTPassword.Length > 0)
                 txtPolarPassword.Text = simpleAES.DecryptString(AppSettings.Default.PPTPassword);
+
+            chkRequireSport.Checked = AppSettings.Default.PPTRequireSport;
 
             if (AppSettings.Default.LastUploadedSession.Equals(new DateTime()))
                 dateTimePicker1.Value = DateTime.Today.Subtract(new TimeSpan(30, 0, 0, 0));
@@ -93,6 +100,11 @@ namespace FitbitUploader
         private void txtPolarPassword_Leave(object sender, EventArgs e)
         {
             savePolarPassword();
+        }
+
+        private void chkRequireSport_CheckedChanged(object sender, EventArgs e)
+        {
+            savePolarRequireSport();
         }
     }
 }
