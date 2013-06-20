@@ -25,6 +25,7 @@ namespace FitbitUploader
         FitbitClient fitbitClient = null;
         DataTable _dtExercises = new DataTable("exercises");
         DataTable _dtUploadResults = new DataTable("result");
+        DataTable _dtFavoriteActivities = new DataTable("favorites");
 
         public FrmMainForm()
         {
@@ -32,6 +33,8 @@ namespace FitbitUploader
 
             dataGridView1.DataSource = _dtExercises;
             dataGridView2.DataSource = _dtUploadResults;
+
+            cmbFavorites.DataSource = _dtFavoriteActivities;
         }
 
         private void btnGetFitbitData_Click(object sender, EventArgs e)
@@ -125,6 +128,31 @@ namespace FitbitUploader
                 MessageBox.Show(ex.Message);
                 Application.Exit();
             }
+        }
+
+        private void loadFavoriteActivities()
+        {
+            var favoriteActivities = fitbitClient.GetFavoriteActivities();
+
+            if (!_dtFavoriteActivities.Columns.Contains("ActivityId"))
+                _dtFavoriteActivities.Columns.Add("ActivityId");
+
+            if (!_dtFavoriteActivities.Columns.Contains("Name"))
+                _dtFavoriteActivities.Columns.Add("Name");
+
+            foreach (ActivityReference activity in favoriteActivities.favoriteActivities)
+            {
+
+                var row = _dtFavoriteActivities.NewRow();
+                row["ActivityId"] = activity.ActivityId;
+                row["Name"] = activity.Name;
+
+                _dtFavoriteActivities.Rows.Add(row);
+            }
+
+            cmbFavorites.DataSource = _dtFavoriteActivities.DefaultView;
+            cmbFavorites.DisplayMember = "Name";
+            cmbFavorites.BindingContext = this.BindingContext;
         }
 
         private void FlattenData( ref DataTable dt, XmlNodeList xmlNodes, string prefix, ref DataRow row )
@@ -559,6 +587,22 @@ namespace FitbitUploader
             {
                 MessageBox.Show("PolarPersonalTrainer error: " + ex.Message);
             }
+        }
+
+        private void btnChangeSport_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbFavorites_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbFavorites_DropDown(object sender, EventArgs e)
+        {
+            if (_dtFavoriteActivities.Rows.Count == 0)
+                loadFavoriteActivities();
         }
     }
 }

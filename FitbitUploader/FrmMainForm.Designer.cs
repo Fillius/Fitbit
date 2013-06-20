@@ -50,6 +50,8 @@
             this.btnBPUpload = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnGetPolarSessions = new System.Windows.Forms.Button();
+            this.cmbFavorites = new System.Windows.Forms.ComboBox();
+            this.btnChangeSport = new System.Windows.Forms.Button();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -151,12 +153,12 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dataGridView1.Size = new System.Drawing.Size(697, 335);
+            this.dataGridView1.Size = new System.Drawing.Size(726, 335);
             this.dataGridView1.TabIndex = 11;
             // 
             // btnLoadPolar
             // 
-            this.btnLoadPolar.Location = new System.Drawing.Point(12, 383);
+            this.btnLoadPolar.Location = new System.Drawing.Point(12, 370);
             this.btnLoadPolar.Name = "btnLoadPolar";
             this.btnLoadPolar.Size = new System.Drawing.Size(101, 23);
             this.btnLoadPolar.TabIndex = 12;
@@ -197,12 +199,12 @@
             dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView2.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
-            this.dataGridView2.Size = new System.Drawing.Size(697, 257);
+            this.dataGridView2.Size = new System.Drawing.Size(726, 257);
             this.dataGridView2.TabIndex = 16;
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(203, 412);
+            this.btnDelete.Location = new System.Drawing.Point(203, 441);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(101, 23);
             this.btnDelete.TabIndex = 17;
@@ -212,7 +214,7 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(12, 470);
+            this.btnClear.Location = new System.Drawing.Point(12, 441);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(101, 23);
             this.btnClear.TabIndex = 18;
@@ -242,7 +244,7 @@
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(203, 383);
+            this.btnSettings.Location = new System.Drawing.Point(12, 470);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(101, 23);
             this.btnSettings.TabIndex = 23;
@@ -252,7 +254,7 @@
             // 
             // btnGetPolarSessions
             // 
-            this.btnGetPolarSessions.Location = new System.Drawing.Point(12, 412);
+            this.btnGetPolarSessions.Location = new System.Drawing.Point(12, 399);
             this.btnGetPolarSessions.Name = "btnGetPolarSessions";
             this.btnGetPolarSessions.Size = new System.Drawing.Size(101, 36);
             this.btnGetPolarSessions.TabIndex = 24;
@@ -260,14 +262,38 @@
             this.btnGetPolarSessions.UseVisualStyleBackColor = true;
             this.btnGetPolarSessions.Click += new System.EventHandler(this.btnGetPolarSessions_Click);
             // 
+            // cmbFavorites
+            // 
+            this.cmbFavorites.FormattingEnabled = true;
+            this.cmbFavorites.Items.AddRange(new object[] {
+            "Favorite Activities"});
+            this.cmbFavorites.Location = new System.Drawing.Point(203, 385);
+            this.cmbFavorites.Name = "cmbFavorites";
+            this.cmbFavorites.Size = new System.Drawing.Size(101, 21);
+            this.cmbFavorites.TabIndex = 25;
+            this.cmbFavorites.DropDown += new System.EventHandler(this.cmbFavorites_DropDown);
+            this.cmbFavorites.SelectedIndexChanged += new System.EventHandler(this.cmbFavorites_SelectedIndexChanged);
+            // 
+            // btnChangeSport
+            // 
+            this.btnChangeSport.Location = new System.Drawing.Point(203, 412);
+            this.btnChangeSport.Name = "btnChangeSport";
+            this.btnChangeSport.Size = new System.Drawing.Size(101, 23);
+            this.btnChangeSport.TabIndex = 26;
+            this.btnChangeSport.Text = "Change Sport";
+            this.btnChangeSport.UseVisualStyleBackColor = true;
+            this.btnChangeSport.Click += new System.EventHandler(this.btnChangeSport_Click);
+            // 
             // FrmMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.BackgroundImage = global::FitbitUploader.Properties.Resources.Fitbit_Ultra;
+            this.BackgroundImage = global::FitbitUploader.Properties.Resources.Fitbit_One1;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1050, 647);
+            this.Controls.Add(this.btnChangeSport);
+            this.Controls.Add(this.cmbFavorites);
             this.Controls.Add(this.btnGetPolarSessions);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.btnBPUpload);
@@ -309,6 +335,8 @@
         private System.Windows.Forms.Button btnBPUpload;
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnGetPolarSessions;
+        private System.Windows.Forms.ComboBox cmbFavorites;
+        private System.Windows.Forms.Button btnChangeSport;
     }
 }
 
