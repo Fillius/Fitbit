@@ -38,6 +38,7 @@
             this.txtPolarPassword = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.chkUploadHR = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -134,11 +135,23 @@
             this.dateTimePicker1.TabIndex = 10;
             this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
+            // chkUploadHR
+            // 
+            this.chkUploadHR.AutoSize = true;
+            this.chkUploadHR.Location = new System.Drawing.Point(12, 228);
+            this.chkUploadHR.Name = "chkUploadHR";
+            this.chkUploadHR.Size = new System.Drawing.Size(211, 17);
+            this.chkUploadHR.TabIndex = 12;
+            this.chkUploadHR.Text = "Upload heart rate summary with Activity";
+            this.chkUploadHR.UseVisualStyleBackColor = true;
+            this.chkUploadHR.CheckedChanged += new System.EventHandler(this.chkUploadHR_CheckedChanged);
+            // 
             // FrmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(243, 231);
+            this.ClientSize = new System.Drawing.Size(243, 255);
+            this.Controls.Add(this.chkUploadHR);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -151,6 +164,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -165,5 +179,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.CheckBox chkRequireSport;
+        private System.Windows.Forms.CheckBox chkUploadHR;
     }
 }

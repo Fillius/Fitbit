@@ -280,6 +280,13 @@ namespace FitbitUploader
 
                 var activityLog = convertPPTExerciseToActivityLog(exercise);
 
+                if (activityLog.Name == null || activityLog.Name.Length == 0)
+                {
+                    skippedCount++;
+                    MessageBox.Show("Cannot upload an activity to Fitbit without an assigned sport");
+                    continue;
+                }
+
                 var existingActivity = fitbitClient.GetDayActivity(exercise.time);
                 bool activityFound = false;
 
@@ -589,20 +596,23 @@ namespace FitbitUploader
             }
         }
 
-        private void btnChangeSport_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cmbFavorites_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void cmbFavorites_DropDown(object sender, EventArgs e)
         {
             if (_dtFavoriteActivities.Rows.Count == 0)
                 loadFavoriteActivities();
+        }
+
+        private void cmbFavorites_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            for (var row = 0; row < dataGridView1.SelectedRows.Count; row++)
+            {
+                ((DataRowView)dataGridView1.SelectedRows[row].DataBoundItem).Row["Sport"] = ((DataRowView)cmbFavorites.SelectedValue).Row.ItemArray[1];
+            }
+        }
+
+        private void btnReloadFavorites_Click(object sender, EventArgs e)
+        {
+            loadFavoriteActivities();
         }
     }
 }

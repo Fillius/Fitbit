@@ -51,7 +51,7 @@
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnGetPolarSessions = new System.Windows.Forms.Button();
             this.cmbFavorites = new System.Windows.Forms.ComboBox();
-            this.btnChangeSport = new System.Windows.Forms.Button();
+            this.btnReloadFavorites = new System.Windows.Forms.Button();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -267,22 +267,23 @@
             this.cmbFavorites.FormattingEnabled = true;
             this.cmbFavorites.Items.AddRange(new object[] {
             "Favorite Activities"});
-            this.cmbFavorites.Location = new System.Drawing.Point(203, 385);
+            this.cmbFavorites.Location = new System.Drawing.Point(203, 372);
             this.cmbFavorites.Name = "cmbFavorites";
             this.cmbFavorites.Size = new System.Drawing.Size(101, 21);
             this.cmbFavorites.TabIndex = 25;
+            this.cmbFavorites.Text = "Set Sport";
             this.cmbFavorites.DropDown += new System.EventHandler(this.cmbFavorites_DropDown);
-            this.cmbFavorites.SelectedIndexChanged += new System.EventHandler(this.cmbFavorites_SelectedIndexChanged);
+            this.cmbFavorites.SelectionChangeCommitted += new System.EventHandler(this.cmbFavorites_SelectionChangeCommitted);
             // 
-            // btnChangeSport
+            // btnReloadFavorites
             // 
-            this.btnChangeSport.Location = new System.Drawing.Point(203, 412);
-            this.btnChangeSport.Name = "btnChangeSport";
-            this.btnChangeSport.Size = new System.Drawing.Size(101, 23);
-            this.btnChangeSport.TabIndex = 26;
-            this.btnChangeSport.Text = "Change Sport";
-            this.btnChangeSport.UseVisualStyleBackColor = true;
-            this.btnChangeSport.Click += new System.EventHandler(this.btnChangeSport_Click);
+            this.btnReloadFavorites.Location = new System.Drawing.Point(203, 399);
+            this.btnReloadFavorites.Name = "btnReloadFavorites";
+            this.btnReloadFavorites.Size = new System.Drawing.Size(101, 23);
+            this.btnReloadFavorites.TabIndex = 26;
+            this.btnReloadFavorites.Text = "Reload Favorites";
+            this.btnReloadFavorites.UseVisualStyleBackColor = true;
+            this.btnReloadFavorites.Click += new System.EventHandler(this.btnReloadFavorites_Click);
             // 
             // FrmMainForm
             // 
@@ -292,7 +293,7 @@
             this.BackgroundImage = global::FitbitUploader.Properties.Resources.Fitbit_One1;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1050, 647);
-            this.Controls.Add(this.btnChangeSport);
+            this.Controls.Add(this.btnReloadFavorites);
             this.Controls.Add(this.cmbFavorites);
             this.Controls.Add(this.btnGetPolarSessions);
             this.Controls.Add(this.btnSettings);
@@ -336,7 +337,7 @@
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnGetPolarSessions;
         private System.Windows.Forms.ComboBox cmbFavorites;
-        private System.Windows.Forms.Button btnChangeSport;
+        private System.Windows.Forms.Button btnReloadFavorites;
     }
 }
 
