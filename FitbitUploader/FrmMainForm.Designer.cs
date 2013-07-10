@@ -116,12 +116,15 @@
             this.btnUploadEntry.Name = "btnUploadEntry";
             this.btnUploadEntry.Size = new System.Drawing.Size(101, 23);
             this.btnUploadEntry.TabIndex = 14;
-            this.btnUploadEntry.Text = "Upload Activity";
+            this.btnUploadEntry.Text = "Upload Selected";
             this.btnUploadEntry.UseVisualStyleBackColor = true;
             this.btnUploadEntry.Click += new System.EventHandler(this.btnCreateActivity_Click);
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToOrderColumns = true;
+            this.dataGridView1.AllowUserToResizeRows = false;
             this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
@@ -153,8 +156,10 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(726, 335);
             this.dataGridView1.TabIndex = 11;
+            this.dataGridView1.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridView1_DataError);
             // 
             // btnLoadPolar
             // 

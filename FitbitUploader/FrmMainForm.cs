@@ -53,8 +53,6 @@ namespace FitbitUploader
             }
             else
                 return;
-
-            //APIRequest("GET", "https://api.fitbit.com/1/user/-/" + path + date + ".xml", true);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -134,6 +132,11 @@ namespace FitbitUploader
         {
             var favoriteActivities = fitbitClient.GetFavoriteActivities();
 
+            if (favoriteActivities == null || favoriteActivities.favoriteActivities.Count == 0)
+                return;
+
+            _dtFavoriteActivities.Rows.Clear();
+
             if (!_dtFavoriteActivities.Columns.Contains("ActivityId"))
                 _dtFavoriteActivities.Columns.Add("ActivityId");
 
@@ -142,7 +145,6 @@ namespace FitbitUploader
 
             foreach (ActivityReference activity in favoriteActivities.favoriteActivities)
             {
-
                 var row = _dtFavoriteActivities.NewRow();
                 row["ActivityId"] = activity.ActivityId;
                 row["Name"] = activity.Name;
@@ -154,27 +156,6 @@ namespace FitbitUploader
             cmbFavorites.DisplayMember = "Name";
             cmbFavorites.BindingContext = this.BindingContext;
         }
-
-        private void FlattenData( ref DataTable dt, XmlNodeList xmlNodes, string prefix, ref DataRow row )
-        {
-            foreach (XmlNode childNode in xmlNodes)
-            {
-                if (childNode.FirstChild == childNode.LastChild)
-                {
-                    if (!dt.Columns.Contains( prefix + childNode.Name))
-                        dt.Columns.Add(prefix + childNode.Name);
-
-                    row[dt.Columns.IndexOf(prefix + childNode.Name)] = childNode.InnerText;
-                }
-                else if (childNode.HasChildNodes)
-                {
-                    if (childNode.Attributes.Count > 0)
-                        FlattenData(ref dt, childNode.ChildNodes, childNode.Name + childNode.Attributes[0].Value + "_", ref row);
-                    else
-                        FlattenData(ref dt, childNode.ChildNodes, childNode.Name + "_", ref row);
-                }
-            }
-        } /* FlattenData */
 
         private void btnLoadPolar_Click(object sender, EventArgs e)
         {   
@@ -614,5 +595,11 @@ namespace FitbitUploader
         {
             loadFavoriteActivities();
         }
+
+        private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Invalid format for data type");
+        }
+
     }
 }
