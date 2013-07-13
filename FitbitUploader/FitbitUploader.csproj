@@ -21,7 +21,6 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <PublishUrl>\\NAS-AA-2D-F3\media\Programs\Development\FitbitUploader\</PublishUrl>
-    <PublishUrl>Z:\Programs\Development\FitbitUploader\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -33,7 +32,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>9</ApplicationRevision>
+    <ApplicationRevision>10</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
