@@ -49,11 +49,6 @@ namespace FitbitUploader
             AppSettings.Default.PPTPassword = simpleAES.EncryptToString(txtPolarPassword.Text);
         }
 
-        private void savePolarRequireSport()
-        {
-            AppSettings.Default.PPTRequireSport = chkRequireSport.Checked;
-        }
-
         private void saveUploadHR()
         {
             AppSettings.Default.UploadHR = chkUploadHR.Checked;
@@ -67,7 +62,6 @@ namespace FitbitUploader
             if (AppSettings.Default.PPTPassword.Length > 0)
                 txtPolarPassword.Text = simpleAES.DecryptString(AppSettings.Default.PPTPassword);
 
-            chkRequireSport.Checked = AppSettings.Default.PPTRequireSport;
             chkUploadHR.Checked = AppSettings.Default.UploadHR;
 
             if (AppSettings.Default.LastUploadedSession.Equals(new DateTime()))
@@ -106,11 +100,6 @@ namespace FitbitUploader
         private void txtPolarPassword_Leave(object sender, EventArgs e)
         {
             savePolarPassword();
-        }
-
-        private void chkRequireSport_CheckedChanged(object sender, EventArgs e)
-        {
-            savePolarRequireSport();
         }
 
         private void chkUploadHR_CheckedChanged(object sender, EventArgs e)

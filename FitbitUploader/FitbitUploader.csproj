@@ -125,8 +125,6 @@
     <Compile Include="FrmMainForm.Designer.cs">
       <DependentUpon>FrmMainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="oAuthExt\oAuthBase2.cs" />
-    <Compile Include="oAuthExt\oAuthFitbit.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AppSettings.Designer.cs">

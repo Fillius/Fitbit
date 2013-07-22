@@ -24,7 +24,6 @@ namespace FitbitUploader
     {
         FitbitClient fitbitClient = null;
         DataTable _dtExercises = new DataTable("exercises");
-        DataTable _dtUploadResults = new DataTable("result");
         DataTable _dtFavoriteActivities = new DataTable("favorites");
 
         public FrmMainForm()
@@ -32,7 +31,6 @@ namespace FitbitUploader
             InitializeComponent();
 
             dataGridView1.DataSource = _dtExercises;
-            dataGridView2.DataSource = _dtUploadResults;
 
             cmbFavorites.DataSource = _dtFavoriteActivities;
         }
@@ -188,6 +186,11 @@ namespace FitbitUploader
 
                 foreach (PPTExercise exercise in exerciseList)
                 {
+                    /* Skip any excercises which we will have already uploaded
+                     * (usually just the single day overlap) */
+                    if (exercise.time <= AppSettings.Default.LastUploadedSession)
+                        continue;
+
                     _dtExercises.Rows.Add(PPTConvert.convertExerciseToDataRow(exercise, _dtExercises));
                 }
             }
@@ -198,44 +201,6 @@ namespace FitbitUploader
 
             dataGridView1.DataSource = _dtExercises;
             dataGridView1.AutoResizeColumns();
-        }
-
-        private bool APIRequest(string method, string uri, bool showResults)
-        {
-            /* TODO upload activity, fitbitClient.
-            var response = _oauth.APIWebRequest(method, uri, null);
-
-            if (method == "DELETE" || !showResults)
-                return true;
-
-            var xmlDoc = new XmlDocument();
-            try
-            {
-                xmlDoc.LoadXml(response);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-
-            var xmlNodes = xmlDoc.GetElementsByTagName("activityLog");
-
-            if (xmlNodes.Count <= 0)
-                xmlNodes = xmlDoc.GetElementsByTagName("result");
-
-            for (var node = xmlNodes.Count - 1; node >= 0; node--)
-            {
-                var logRow = _dtUploadResults.NewRow();
-
-                FlattenData(ref _dtUploadResults, xmlNodes[node].ChildNodes, "", ref logRow);
-
-                _dtUploadResults.Rows.Add(logRow);
-            }
-            dataGridView2.DataSource = _dtUploadResults;
-            dataGridView2.AutoResizeColumns();
-            */
-            return true;
         }
 
         private ActivityLog convertPPTExerciseToActivityLog(PPTExercise exercise)
@@ -406,9 +371,7 @@ namespace FitbitUploader
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            _dtUploadResults.Clear();
             _dtExercises.Clear();
-            _dtUploadResults.Columns.Clear();
             _dtExercises.Columns.Clear();
         }
 
@@ -532,10 +495,7 @@ namespace FitbitUploader
                     APIRequest("POST", uri, false);
                 }
             }
-
-            /*_dtUploaded.WriteXml(_uploadedFile);
-            _dtUploaded.WriteXmlSchema(_uploadedSchema);
-            lblLastUploaded.Text = AppSettings.Default.LastUpload.ToString();
+            
             AppSettings.Default.Save();*/
         }
 
