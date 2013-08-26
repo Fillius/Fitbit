@@ -182,7 +182,8 @@ namespace FitbitUploader
         {
             try
             {
-                List<PPTExercise> exerciseList = PPTExtract.convertXmlToExercises(xml, AppSettings.Default.PPTRequireSport);
+                //TODO remove require sport option
+                List<PPTExercise> exerciseList = PPTExtract.convertXmlToExercises(xml, false);
 
                 foreach (PPTExercise exercise in exerciseList)
                 {
